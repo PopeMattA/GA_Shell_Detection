@@ -1,4 +1,4 @@
-## General Atomics Shell Detection
+# General Atomics Shell Detection
 ![image](https://github.com/user-attachments/assets/e93421ae-3419-4e86-a8bd-b018396a4510)
 
 ## 📌 Overview
