@@ -1,5 +1,4 @@
-# GA_Shell_Detection
-# 🚀 Arduino Servo & DC Motor Control with Relay and Sensor Integration
+# 🚀 General Atomics Shell Detection
 
 ## 📌 Overview
 This Arduino project controls a **servo motor, a DC motor, a relay, and a sensor system**. It integrates a **PCA9685 servo driver**, **push buttons**, and a **sensor** for detection. The system:
