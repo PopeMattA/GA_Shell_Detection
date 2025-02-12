@@ -61,3 +61,8 @@ This Arduino project controls a **servo motor, a DC motor, a relay, and a sensor
 - The **relay toggles every 5 seconds**.
 - The **DC motor runs continuously**.
 - The **sensor detects objects**, triggering `"Shell detected! Take a picture!"` in the Serial Monitor.
+
+## 📞 Contact
+📩 Author: Matthew Pope
+🔗 GitHub: PopeMattA
+📧 Email: [popematt1204@gmail.com]
