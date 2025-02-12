@@ -1,4 +1,5 @@
 # 🚀 General Atomics Shell Detection
+![image](https://github.com/user-attachments/assets/e93421ae-3419-4e86-a8bd-b018396a4510)
 
 ## 📌 Overview
 This Arduino project controls a **servo motor, a DC motor, a relay, and a sensor system**. It integrates a **PCA9685 servo driver**, **push buttons**, and a **sensor** for detection. The system:
