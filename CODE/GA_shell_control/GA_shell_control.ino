@@ -33,7 +33,9 @@ int currentPositionState = 0; // Tracks current state (0 or 180 degrees)
 
 bool relayState = false;
 unsigned long lastRelayToggleTime = 0;
-const unsigned long relayInterval = 5000; // 5 seconds
+//const unsigned long relayInterval = 5000; // 5 seconds
+const unsigned long relayOnTime = 3000;  // Relay stays ON for 3 seconds
+const unsigned long relayOffTime = 7000; // Relay stays OFF for 7 seconds
 
 int ena = 5;
 int in1 = 6;
@@ -108,13 +110,19 @@ void handleButtons() {
 void toggleRelay() {
   unsigned long currentMillis = millis();
 
-  if (currentMillis - lastRelayToggleTime >= relayInterval) {
-    relayState = !relayState;  // Toggle relay state
-    digitalWrite(RELAY_PIN, relayState ? HIGH : LOW);
+  // Check if it's time to toggle the relay
+  if (relayState && (currentMillis - lastRelayToggleTime >= relayOnTime)) {
+    relayState = false;  // Turn relay OFF
+    digitalWrite(RELAY_PIN, LOW);
     lastRelayToggleTime = currentMillis;  // Reset timer
-
+  }
+  else if (!relayState && (currentMillis - lastRelayToggleTime >= relayOffTime)) {
+    relayState = true;  // Turn relay ON
+    digitalWrite(RELAY_PIN, HIGH);
+    lastRelayToggleTime = currentMillis;  // Reset timer
   }
 }
+
 
 void runDC() {
   digitalWrite(in1, HIGH);
