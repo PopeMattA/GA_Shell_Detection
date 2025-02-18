@@ -2,6 +2,8 @@
 #include <Adafruit_PWMServoDriver.h>
 #define RELAY_PIN 4
 
+#define FLOAT_SWITCH_PIN 8  // Pin connected to the float switch
+
 // Create PWM servo driver instance
 Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 
@@ -12,7 +14,7 @@ const int SERVOMAX = 600; // Maximum pulse length (180°)
 
 // Define servo channel and positions
 const int servoChannel = 0;  // The servo connected to channel 0 on PCA9865
-const int position0 = 300;  // 0 degrees
+const int position0 = 450;  // 0 degrees
 const int position180 = SERVOMAX; // 180 degrees
 
 const int motorPin1 = 9;
@@ -52,13 +54,17 @@ void setup() {
 
   pinMode(goodSumpButton, INPUT_PULLUP);
   pinMode(badSumpButton, INPUT_PULLUP);
-  pinMode(RELAY_PIN, OUTPUT);
+  
 
   pinMode(ena, OUTPUT);
   pinMode(in1, OUTPUT);
   pinMode(in2, OUTPUT);
 
   pinMode(sensorPin, INPUT_PULLUP);  // This enables the internal pull-up resistor
+
+  pinMode(FLOAT_SWITCH_PIN, INPUT_PULLUP);  // Use internal pull-up resistor
+  pinMode(RELAY_PIN, OUTPUT);
+  digitalWrite(RELAY_PIN, HIGH);  // Keep relay OFF initially
 }
 
 void loop() {
@@ -108,21 +114,33 @@ void handleButtons() {
 }
 
 void toggleRelay() {
-  unsigned long currentMillis = millis();
+  int floatState = digitalRead(FLOAT_SWITCH_PIN);  // Read float switch state
 
-  // Check if it's time to toggle the relay
-  if (relayState && (currentMillis - lastRelayToggleTime >= relayOnTime)) {
-    relayState = false;  // Turn relay OFF
-    digitalWrite(RELAY_PIN, LOW);
-    lastRelayToggleTime = currentMillis;  // Reset timer
-  }
-  else if (!relayState && (currentMillis - lastRelayToggleTime >= relayOffTime)) {
-    relayState = true;  // Turn relay ON
-    digitalWrite(RELAY_PIN, HIGH);
-    lastRelayToggleTime = currentMillis;  // Reset timer
-  }
+
+    if (floatState == LOW) {  // If float switch is activated (closed)
+        digitalWrite(RELAY_PIN, HIGH);  // Turn ON relay (active low)
+        Serial.println("flow go");
+    } else {
+        digitalWrite(RELAY_PIN, LOW); // Turn OFF relay
+        Serial.println("flow no go");
+    }
+
+
+//   unsigned long currentMillis = millis();
+
+//   // Check if it's time to toggle the relay
+//   if (relayState && (currentMillis - lastRelayToggleTime >= relayOnTime)) {
+//     relayState = false;  // Turn relay OFF
+//     digitalWrite(RELAY_PIN, LOW);
+//     lastRelayToggleTime = currentMillis;  // Reset timer
+//   }
+//   else if (!relayState && (currentMillis - lastRelayToggleTime >= relayOffTime)) {
+//     relayState = true;  // Turn relay ON
+//     digitalWrite(RELAY_PIN, HIGH);
+//     lastRelayToggleTime = currentMillis;  // Reset timer
+//   }
+// }
 }
-
 
 void runDC() {
   digitalWrite(in1, HIGH);
