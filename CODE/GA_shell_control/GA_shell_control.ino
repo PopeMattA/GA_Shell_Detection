@@ -92,38 +92,40 @@ void reset_servo() {
 }
 
 void handleButtons() {
-  if (digitalRead(goodSumpButton) == LOW) {
-    if (currentPositionState != 0) {
-      Serial.println("Moving to good sump.");
-      setServoPosition(position0);
-      currentPositionState = 0;
-    } else {
-      Serial.println("Already at good sump.");
-    }
+  static bool lastGoodSumpState = LOW;  // NC button starts LOW
+  static bool lastBadSumpState = LOW;
+
+  bool goodSumpState = digitalRead(goodSumpButton);
+  bool badSumpState = digitalRead(badSumpButton);
+
+  // Detect release (transition from LOW to HIGH)
+  if (goodSumpState == HIGH && lastGoodSumpState == LOW) {
+    Serial.println("Moving to good sump.");
+    setServoPosition(position0);
+    currentPositionState = 0;
   }
 
-  if (digitalRead(badSumpButton) == LOW) {
-    if (currentPositionState != 180) {
-      Serial.println("Moving to bad sump.");
-      setServoPosition(position180);
-      currentPositionState = 180;
-    } else {
-      Serial.println("Already at bad sump.");
-    }
+  if (badSumpState == HIGH && lastBadSumpState == LOW) {
+    Serial.println("Moving to bad sump.");
+    setServoPosition(position180);
+    currentPositionState = 180;
   }
+
+  lastGoodSumpState = goodSumpState;
+  lastBadSumpState = badSumpState;
 }
 
 void toggleRelay() {
   int floatState = digitalRead(FLOAT_SWITCH_PIN);  // Read float switch state
 
 
-    if (floatState == LOW) {  // If float switch is activated (closed)
+  if (floatState == LOW) {  // If float switch is activated (closed)
         digitalWrite(RELAY_PIN, HIGH);  // Turn ON relay (active low)
-        Serial.println("flow go");
-    } else {
-        digitalWrite(RELAY_PIN, LOW); // Turn OFF relay
         Serial.println("flow no go");
-    }
+  } else {
+        digitalWrite(RELAY_PIN, LOW); // Turn OFF relay
+        Serial.println("flow go");
+  }
 
 
 //   unsigned long currentMillis = millis();
