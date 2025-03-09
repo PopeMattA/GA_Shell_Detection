@@ -3,8 +3,9 @@
 
 #define RELAY_PIN 4
 #define FLOAT_SWITCH_PIN 8  // Pin connected to the float switch
+#define FLOAT_SWITCH_PIN_2 9 // Pin connected to second float switch
 #define SENSOR_PIN 2        // NPN sensor connected to digital pin 2
-#define CAMERA_PIN 13       // LED/camera trigger on pin 13
+#define CAMERA_PIN 11       // LED/camera trigger on pin 13
 
 // Create PWM servo driver instance
 Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
@@ -16,10 +17,6 @@ const int SERVOMAX = 600;
 const int servoChannel = 0;  // The servo connected to channel 0 on PCA9865
 const int position0 = 450;   // 0 degrees
 const int position180 = SERVOMAX; // 180 degrees
-
-const int motorPin1 = 9;
-const int motorPin2 = 10;
-const int motorPWM = 11;
 
 // Define button commands
 const int goodSumpButton = 12;  // Button to move servo to 0°
@@ -75,6 +72,7 @@ void setup() {
     pinMode(in2, OUTPUT);
 
     pinMode(FLOAT_SWITCH_PIN, INPUT_PULLUP);
+    pinMode(FLOAT_SWITCH_PIN_2, INPUT_PULLUP);
     pinMode(RELAY_PIN, OUTPUT);
     digitalWrite(RELAY_PIN, HIGH);  
 
@@ -133,8 +131,8 @@ void handleButtons() {
 
 void toggleRelay() {
     int floatState = digitalRead(FLOAT_SWITCH_PIN);
-
-    if (floatState == LOW) {  
+    int floatState2 = digitalRead(FLOAT_SWITCH_PIN_2);
+    if (floatState == LOW || floatState2 == LOW) {  
         digitalWrite(RELAY_PIN, HIGH);  
         //Serial.println("Flow no go");
     } else {
