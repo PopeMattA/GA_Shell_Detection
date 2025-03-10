@@ -40,6 +40,7 @@ const float distanceToCamera = 113.0;
 const float tubeDiameterAtSensor = 7.0;  
 const float tubeDiameterAtCamera = 10;  
 const float expansionPoint = 100;      
+const float DELAY_CONSTANT = 70; // Time Delay Constant for LED (camera)
 
 // Timing variables
 volatile unsigned long detectionStartTime = 0;
@@ -176,7 +177,7 @@ void sensorDetect() {
             float timeAfterExpansion = (distanceToCamera - expansionPoint) / adjustedVelocity / 1000.0;
             triggerDelay = (timeToExpansion + timeAfterExpansion) * 1000.0;
         } else {
-            triggerDelay = (distanceToCamera / shellVelocity) * 1000.0;
+            triggerDelay = ((distanceToCamera + DELAY_CONSTANT) / shellVelocity) * 1000.0;
         }
 
         Serial.print("Trigger delay: ");
