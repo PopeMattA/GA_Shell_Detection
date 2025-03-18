@@ -86,7 +86,8 @@ void setup() {
 
 void loop() {
     reset_servo();
-    handleButtons();
+    handleButtonsTime();
+    //handleButtonsManual();
     toggleRelay();
     runDC();
     sensorDetect();
@@ -107,28 +108,79 @@ void reset_servo() {
     }
 }
 
-void handleButtons() {
+void handleButtonsTime() {
     static bool lastGoodSumpState = LOW;
     static bool lastBadSumpState = LOW;
+    static unsigned long goodSumpPressedTime = 0;
+    static unsigned long badSumpPressedTime = 0;
+    static bool goodSumpPending = false;
+    static bool badSumpPending = false;
+    static float delayTime = 3000;  // Default to 3 seconds if no sensor data
 
     bool goodSumpState = digitalRead(goodSumpButton);
     bool badSumpState = digitalRead(badSumpButton);
+    unsigned long currentMillis = millis();
 
+    // Calculate delay time dynamically based on shell speed
+    if (shellVelocity > 0) {
+        float switchingDistance = 50.0;  // Distance to switching point (adjust as needed)
+        delayTime = (switchingDistance / shellVelocity) * 1000.0;  // Convert to milliseconds
+    }
+
+    // Detect button press and start countdown
     if (goodSumpState == HIGH && lastGoodSumpState == LOW) {
-        Serial.println("Moving to good sump.");
-        setServoPosition(position0);
-        currentPositionState = 0;
+        Serial.println("Good sump button pressed, waiting dynamically...");
+        goodSumpPressedTime = currentMillis;
+        goodSumpPending = true;
     }
 
     if (badSumpState == HIGH && lastBadSumpState == LOW) {
+        Serial.println("Bad sump button pressed, waiting dynamically...");
+        badSumpPressedTime = currentMillis;
+        badSumpPending = true;
+    }
+
+    // Check if calculated time has passed and move servo accordingly
+    if (goodSumpPending && (currentMillis - goodSumpPressedTime >= delayTime)) {
+        Serial.println("Moving to good sump.");
+        setServoPosition(position0);
+        currentPositionState = 0;
+        goodSumpPending = false; // Reset flag
+    }
+
+    if (badSumpPending && (currentMillis - badSumpPressedTime >= delayTime)) {
         Serial.println("Moving to bad sump.");
         setServoPosition(position180);
         currentPositionState = 180;
+        badSumpPending = false; // Reset flag
     }
 
     lastGoodSumpState = goodSumpState;
     lastBadSumpState = badSumpState;
 }
+
+// void handleButtonsManual() {
+//     static bool lastGoodSumpState = LOW;
+//     static bool lastBadSumpState = LOW;
+
+//     bool goodSumpState = digitalRead(goodSumpButton);
+//     bool badSumpState = digitalRead(badSumpButton);
+
+//     if (goodSumpState == HIGH && lastGoodSumpState == LOW) {
+//         Serial.println("Moving to good sump.");
+//         setServoPosition(position0);
+//         currentPositionState = 0;
+//     }
+
+//     if (badSumpState == HIGH && lastBadSumpState == LOW) {
+//         Serial.println("Moving to bad sump.");
+//         setServoPosition(position180);
+//         currentPositionState = 180;
+//     }
+
+//     lastGoodSumpState = goodSumpState;
+//     lastBadSumpState = badSumpState;
+// }
 
 void toggleRelay() {
     int floatState = digitalRead(FLOAT_SWITCH_PIN);
