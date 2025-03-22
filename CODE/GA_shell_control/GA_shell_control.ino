@@ -36,11 +36,11 @@ int in2 = 7;
 // Physical parameters - adjust these to your actual setup
 const float shellDiameter = 4;         
 const float sensorWidth = 2.5;          
-const float distanceToCamera = 113.0;   
+const float distanceToCamera = 200.0;   
 const float tubeDiameterAtSensor = 7.0;  
 const float tubeDiameterAtCamera = 10;  
 const float expansionPoint = 100;      
-const float DELAY_CONSTANT = 70; // Time Delay Constant for LED (camera)
+const float DELAY_CONSTANT = 50; // Time Delay Constant for LED (camera)
 
 // Timing variables
 volatile unsigned long detectionStartTime = 0;
@@ -86,8 +86,8 @@ void setup() {
 
 void loop() {
     reset_servo();
-    handleButtonsTime();
-    //handleButtonsManual();
+    //handleButtonsTime();
+    handleButtonsManual();
     toggleRelay();
     runDC();
     sensorDetect();
@@ -159,28 +159,28 @@ void handleButtonsTime() {
     lastBadSumpState = badSumpState;
 }
 
-// void handleButtonsManual() {
-//     static bool lastGoodSumpState = LOW;
-//     static bool lastBadSumpState = LOW;
+void handleButtonsManual() {
+    static bool lastGoodSumpState = LOW;
+    static bool lastBadSumpState = LOW;
 
-//     bool goodSumpState = digitalRead(goodSumpButton);
-//     bool badSumpState = digitalRead(badSumpButton);
+    bool goodSumpState = digitalRead(goodSumpButton);
+    bool badSumpState = digitalRead(badSumpButton);
 
-//     if (goodSumpState == HIGH && lastGoodSumpState == LOW) {
-//         Serial.println("Moving to good sump.");
-//         setServoPosition(position0);
-//         currentPositionState = 0;
-//     }
+    if (goodSumpState == HIGH && lastGoodSumpState == LOW) {
+        Serial.println("Moving to good sump.");
+        setServoPosition(position0);
+        currentPositionState = 0;
+    }
 
-//     if (badSumpState == HIGH && lastBadSumpState == LOW) {
-//         Serial.println("Moving to bad sump.");
-//         setServoPosition(position180);
-//         currentPositionState = 180;
-//     }
+    if (badSumpState == HIGH && lastBadSumpState == LOW) {
+        Serial.println("Moving to bad sump.");
+        setServoPosition(position180);
+        currentPositionState = 180;
+    }
 
-//     lastGoodSumpState = goodSumpState;
-//     lastBadSumpState = badSumpState;
-// }
+    lastGoodSumpState = goodSumpState;
+    lastBadSumpState = badSumpState;
+}
 
 void toggleRelay() {
     int floatState = digitalRead(FLOAT_SWITCH_PIN);
